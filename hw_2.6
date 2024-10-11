@@ -1,0 +1,84 @@
+import random
+
+states = {
+    'A': {'B', 'C', 'U'},
+    'B': {'E', 'G'},
+    'C': {'G', 'I', 'J'},
+    'U': {'K', 'Y'},
+    'E': {'G', 'M'},
+    'G': {'M'},
+    'I': {'M'},
+    'J': {'K'},
+    'K': {'J'},
+    'Y': {'M'},
+    'M': set()
+}
+
+h_values = {
+    'A': 7,
+    'B': 5,
+    'C': 3,
+    'U': 4,
+    'E': 2,
+    'G': 3,
+    'I': 6,
+    'J': 4,
+    'K': 1,
+    'Y': 2,
+    'M': 0
+}
+
+def hill_climbing(start, goal, max_sideways_moves=5, exploration_probability=0.1):
+    # Since the hill climbing algorithm couldn't reach the goal by itself, since it encounters a local minimum, adjust it to use stochastic hill climbing and random restarts.
+    current_state = start
+    path = [current_state]
+    sideways_moves = 0
+
+    while current_state != goal:
+        neighbors = states[current_state]
+        next_state = None
+        lowest_h = h_values[current_state]
+
+        print(f"At state: {current_state}, Neighbors: {neighbors}")
+
+        for neighbor in neighbors:
+            if h_values[neighbor] < lowest_h:
+                next_state = neighbor
+                lowest_h = h_values[neighbor]
+                sideways_moves = 0
+            elif h_values[neighbor] == lowest_h and sideways_moves < max_sideways_moves:
+                next_state = neighbor
+                sideways_moves += 1
+            elif random.random() < exploration_probability:
+                next_state = neighbor
+
+        if next_state is None:
+            break
+
+        current_state = next_state
+        path.append(current_state)
+
+    return path
+
+
+def random_restart_hill_climbing(start, goal, max_restarts=10, max_sideways_moves=5, exploration_probability=0.1):
+    success = False
+
+    for restart in range(max_restarts):
+
+        path = hill_climbing(start, goal, max_sideways_moves, exploration_probability)
+
+        if path[-1] == goal:
+            print(f"Reached goal. Path: {path}")
+            success = True
+            break
+        else:
+            print(f"Did not reach goal. Path: {path}")
+
+    if not success:
+        print("Couldn't reach goal after the maximum number of restarts.")
+    return path
+
+
+final_path = random_restart_hill_climbing('A', 'M', max_restarts=1, max_sideways_moves=10, exploration_probability=0.2)
+print(f"Final path: {final_path}")
