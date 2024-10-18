@@ -1,0 +1,73 @@
+import random
+# We can use the OneMax problem as an example for the genetic algorithm where the fittest individual is the binary number with the most 1's
+
+
+def genetic_algorithm(population, fitness, max_generations=1000, mutation_prob=0.01, fraction_to_keep=0.1):
+    generation = 0
+    population_size = len(population)
+
+    while generation < max_generations:
+        fitness_values = [fitness(individual) for individual in population]
+
+        total_fitness = sum(fitness_values)
+        probabilities = [f / total_fitness for f in fitness_values]
+
+        sorted_population = sorted(population, key=fitness, reverse=True)
+
+        elite_count = int(fraction_to_keep * population_size)
+        new_population = sorted_population[:elite_count]
+
+        while len(new_population) < population_size:
+            # Roulette wheel selection
+            parent1, parent2 = random.choices(population, weights=probabilities, k=2)
+
+            child1, child2 = crossover(parent1, parent2)
+
+            if random.random() < mutation_prob:
+                child1 = mutate(child1)
+            if random.random() < mutation_prob:
+                child2 = mutate(child2)
+
+            new_population.append(child1)
+            if len(new_population) < population_size:
+                new_population.append(child2)
+
+        population = new_population
+
+        if any(fitness(individual) == len(individual) for individual in population):
+            break
+
+        generation += 1
+
+    return population, max(population, key=fitness)
+
+
+def crossover(parent1, parent2):
+    n = len(parent1)
+    c = random.randint(1, n - 1)
+    child1 = parent1[:c] + parent2[c:]
+    child2 = parent2[:c] + parent1[c:]
+    return child1, child2
+
+
+def mutate(individual):
+    index = random.randint(0, len(individual) - 1)
+    mutated = list(individual)
+    mutated[index] = '1' if individual[index] == '0' else '0'
+    return ''.join(mutated)
+
+
+def fitness(individual):
+    return sum(int(bit) for bit in individual)
+
+
+# Example using the OneMax problem
+if __name__ == "__main__":
+    population = [''.join(random.choice('01') for _ in range(6)) for _ in range(10)]
+
+    final_population, best_individual = genetic_algorithm(population, fitness)
+
+    print("Original Population:", population)
+    print("Final Population:", final_population)
+    print("Best Individual:", best_individual)
+    print("Best Fitness:", fitness(best_individual))
