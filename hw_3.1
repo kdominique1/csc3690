@@ -1,0 +1,57 @@
+class Game:
+    def __init__(self, start_state):
+        self.start_state = start_state
+
+    def to_move(self, state):
+        return 'MAX' if len(state) % 2 == 0 else 'MIN'
+
+    def actions(self, state):
+        return state
+
+    def result(self, state, action):
+        return action
+
+    def is_terminal(self, state):
+        return isinstance(state, int)
+
+    def utility(self, state, player):
+        return state
+
+
+def minimax_search(game, state):
+    player = game.to_move(state)
+    value, move = max_value(game, state)
+    return move
+
+
+def max_value(game, state):
+    if game.is_terminal(state):
+        return game.utility(state, 'MAX'), None
+    v = float('-inf')
+    move = None
+    for action in game.actions(state):
+        v2, _ = min_value(game, game.result(state, action))
+        if v2 > v:
+            v, move = v2, action
+    return v, move
+
+
+def min_value(game, state):
+    if game.is_terminal(state):
+        return game.utility(state, 'MIN'), None
+    v = float('inf')
+    move = None
+    for action in game.actions(state):
+        v2, _ = max_value(game, game.result(state, action))
+        if v2 < v:
+            v, move = v2, action
+    return v, move
+
+
+start_state = [[3, 5], [17, 8], [-2, 5], [-1, 7]]
+
+game = Game(start_state)
+
+final_path = minimax_search(game, start_state)
+print("Final path:", final_path)
+
