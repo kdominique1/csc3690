@@ -1,0 +1,29 @@
+def minimax(node, depth, alpha, beta, maximizingPlayer):
+    if depth == 0 or isinstance(node, int):
+        return node
+
+    if maximizingPlayer:
+        maxResult = float('-inf')
+        for child in node:
+            value = minimax(child, depth - 1, alpha, beta, False)
+            maxResult = max(maxResult, value)
+            alpha = max(alpha, maxResult)
+            if alpha >= beta:
+                break
+        return maxResult
+
+    else:
+        minResult = float('inf')
+        for child in node:
+            value = minimax(child, depth - 1, alpha, beta, True)
+            minResult = min(minResult, value)
+            beta = min(beta, minResult)
+            if alpha >= beta:
+                break
+        return minResult
+
+
+tree = [[[3, 5], [17, 8]], [[-2, 5], [-1, 7]]]
+
+finalResult = minimax(tree, 3, float('-inf'), float('inf'), True)
+print("Final result:", finalResult)
