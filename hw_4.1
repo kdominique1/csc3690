@@ -1,0 +1,78 @@
+import math
+
+def entropy(yes, no):
+    total = yes + no
+    if total == 0:
+        return 0
+    yes_fraction = yes / total
+    no_fraction = no / total
+    if yes == 0:
+        log_yes = 0
+    else:
+        log_yes = math.log(yes_fraction, 2)
+    if no == 0:
+        log_no = 0
+    else:
+        log_no = math.log(no_fraction, 2)
+    return -(yes_fraction * log_yes) - (no_fraction * log_no)
+
+def info_gain(main_entropy, total_entropy):
+    return main_entropy - total_entropy
+
+ent_mammal = entropy(6, 4)
+
+ent_mammal_toothed = (0.8 * entropy(5, 3)) + (0.2 * entropy(1, 1))
+ent_mammal_hair = (0.5 * entropy(5, 0)) + (0.5 * entropy(1, 4))
+ent_mammal_breathes = (0.9 * entropy(6, 3)) + (0.1 * entropy(0, 1))
+ent_mammal_legs = (0.7 * entropy(6, 1)) + (0.3 * entropy(0, 3))
+
+info_gain_toothed = info_gain(ent_mammal, ent_mammal_toothed)
+info_gain_hair = info_gain(ent_mammal, ent_mammal_hair)
+info_gain_breathes = info_gain(ent_mammal, ent_mammal_breathes)
+info_gain_legs = info_gain(ent_mammal, ent_mammal_legs)
+
+print("IG for Toothed:", info_gain_toothed)
+print("IG for Hair:", info_gain_hair)
+print("IG for Breathes:", info_gain_breathes)
+print("IG for Legs:", info_gain_legs)
+print("Hair has the highest info gain, so start node is Hair")
+
+print("Hair = Yes -> Mammal")
+
+ent_hair_no = entropy(1, 4)
+
+ent_toothed_yes = entropy(1, 2)
+ent_toothed_no = entropy(0, 2)
+total_entropy_toothed = (3/5) * ent_toothed_yes + (2/5) * ent_toothed_no
+info_gain_toothed_hair_no = info_gain(ent_hair_no, total_entropy_toothed)
+
+ent_breathes_yes = entropy(1, 3)
+ent_breathes_no = entropy(0, 1)
+total_entropy_breathes = (4/5) * ent_breathes_yes + (1/5) * ent_breathes_no
+info_gain_breathes_hair_no = info_gain(ent_hair_no, total_entropy_breathes)
+
+ent_legs_yes = entropy(1, 1)
+ent_legs_no = entropy(0, 3)
+total_entropy_legs = (2/5) * ent_legs_yes + (3/5) * ent_legs_no
+info_gain_legs_hair_no = info_gain(ent_hair_no, total_entropy_legs)
+
+print("IG for Toothed (Hair = No):", info_gain_toothed_hair_no)
+print("IG for Breathes (Hair = No):", info_gain_breathes_hair_no)
+print("IG for Legs (Hair = No):", info_gain_legs_hair_no)
+print("Legs has the highest info gain for Hair = No")
+
+print("Hair = No -> Legs = No -> Reptile")
+
+ent_toothed_yes_split = entropy(1, 0)
+ent_toothed_no_split = entropy(0, 1)
+total_entropy_toothed_split = (1/2) * ent_toothed_yes_split + (1/2) * ent_toothed_no_split
+info_gain_toothed_legs_yes = info_gain(entropy(1, 1), total_entropy_toothed_split)
+
+ent_breathes_yes_split = entropy(1, 1)
+ent_breathes_no_split = entropy(0, 0)
+total_entropy_breathes_split = (2/2) * ent_breathes_yes_split
+info_gain_breathes_legs_yes = info_gain(entropy(1, 1), total_entropy_breathes_split)
+
+print("IG for Toothed (Legs = Yes):", info_gain_toothed_legs_yes)
+print("IG for Breathes (Legs = Yes):", info_gain_breathes_legs_yes)
+print("Toothed has the highest info gain for Legs = Yes")
