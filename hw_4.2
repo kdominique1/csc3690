@@ -1,0 +1,26 @@
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+
+col_names = [
+    'age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg',
+    'thalachh', 'exang', 'oldpeak', 'slope', 'ca', 'thal', 'target'
+]
+pima = pd.read_csv("cleaned_merged_heart_dataset.csv", header=0, names=col_names)
+pd.set_option('display.max_columns', None)
+print(pima.head())
+
+feature_cols = [
+    'age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg',
+    'thalachh', 'exang', 'oldpeak', 'slope', 'ca', 'thal'
+]
+x = pima[feature_cols]
+y = pima['target']
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=1)
+
+clf = DecisionTreeClassifier(criterion="entropy", max_depth=3)
+clf = clf.fit(x_train, y_train)
+y_pred = clf.predict(x_test)
+print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
+
