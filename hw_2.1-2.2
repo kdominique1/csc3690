@@ -1,0 +1,35 @@
+from collections import deque
+
+class Problem:
+    def __init__(self, start, goal):
+        self.start = start
+        self.goal = goal
+
+    def is_goal(self, state):
+        return state == self.goal
+
+    def expand(self, k):
+        return [2*k, 2*k+1]
+
+def breadth_first_search(problem):
+    node = problem.start
+    if problem.is_goal(node):
+        return [node]
+    frontier = deque([[node]])
+    reached = {node}
+
+    while frontier:
+        path = frontier.popleft()
+        state = path[-1]
+        for child in problem.expand(state):
+            if child not in reached:
+                new_path = path + [child]
+                if problem.is_goal(child):
+                    return new_path
+                frontier.append(new_path)
+                reached.add(child)
+    return None
+
+problem = Problem(start=1, goal=11)
+bfs_path = breadth_first_search(problem)
+print("Final path:", bfs_path)
